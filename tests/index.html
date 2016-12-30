@@ -36,8 +36,11 @@
                 if(data['event'] == "count"){
                     document.getElementById("content").value += "\n在线人数更新:" + data['data'];
                 }
+            };
+            websocket.onclose = function () {
+                alert("连接已经断开");
             }
-        }
+        };
         send = function () {
             websocket.send(JSON.stringify({
                 event: "message",

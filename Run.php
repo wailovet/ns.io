@@ -1,27 +1,19 @@
 <?php
-use Nsio\Group;
+use Nsio\Io;
+
 require_once("./workerman/autoload.php");
 
-$io = Server::createWebsocket(12306);
-$io->connection(function ($ioi) use ($io) {
+$server = Server::createWebsocket(12306);
+$server->connection(function (Io $io) use ($server) {
+    $io->on("group", function ($data) use ($io, $server) {
+        $io->join($data);
 
-    echo "connection \n";
-    /** @var \Nsio\Io $i */
-    $i = $ioi;
-
-    $i->on("group", function ($data) use ($i, $io) {
-
-        $i->join($data);
-        $io->toGroup($data)->emit("count", Group::getInstance()->count($data));
-        $io->emit("count", Group::getInstance()->count());
-
-        $i->on("message", function ($msg) use ($i, $io, $data) {
-            $io->toGroup($data)->filter(array($i->getId()))->emit("message", $msg);
+        $io->on("message", function ($msg) use ($io, $server, $data) {
+            $server->toGroup($data)->filter(array($io->getId()))->emit("message", $msg);
         });
     });
-    $i->disconnect(function () {
-        echo "count:" . Group::getInstance()->count() . "\n";
-        echo "disconnect \n";
+    $io->disconnect(function () {
+        echo "disconnect\n";
     });
 });
-$io->run();
+$server->run();
