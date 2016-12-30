@@ -15,42 +15,17 @@ use BaseMessageInterface;
 class MainIo
 {
 
-    private $host = "0.0.0.0";
-    private $port;
 
     /**
      * 通讯协议的实现
      * @var BaseMessageInterface main_message
      */
-    public $main_message;
+    private $main_message;
 
-    public function __construct($port)
+    public function __construct($main_message)
     {
-        if (!empty($port)) {
-            $this->port = $port;
-        }
+        $this->main_message = $main_message;
     }
-
-    public function getHost()
-    {
-        return $this->host;
-    }
-
-    public function setHost($host)
-    {
-        $this->host = $host;
-    }
-
-    public function getPort()
-    {
-        return $this->port;
-    }
-
-    public function setPort($port)
-    {
-        $this->port = $port;
-    }
-
 
     public function connection($callback)
     {

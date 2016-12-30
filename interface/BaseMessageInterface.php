@@ -2,10 +2,26 @@
 
 interface BaseMessageInterface
 {
+
+    /**
+     * 初始化
+     * BaseMessageInterface constructor.
+     * @param $host
+     * @param $port
+     */
     public function __construct($host, $port);
 
+    /**
+     * 连接事件，传入一个BaseMessageChildInterface
+     * @param $callback
+     * @return mixed
+     */
     public function connect($callback);
 
+    /**
+     * 运行
+     * @return mixed
+     */
     public static function run();
 }
 

@@ -9,13 +9,11 @@
 class BaseMessageChild implements BaseMessageChildInterface
 {
 
-
     /** @var \Workerman\Connection\TcpConnection $connection */
     public $connection;
 
     public function __construct($connection)
     {
-
         $this->connection = $connection;
     }
 

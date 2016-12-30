@@ -17,7 +17,6 @@ class BaseMessage implements BaseMessageInterface
         $this->worker = new Worker(BaseMessage::$message_protocol . "://{$host}:{$port}");
     }
 
-
     public function connect($callback)
     {
         $this->worker->onConnect = function ($connection) use ($callback) {
