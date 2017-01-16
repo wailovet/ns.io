@@ -1,5 +1,6 @@
 <?php
 use Nsio\MainIo;
+
 class Server
 {
     public static function createTcp($port)
@@ -26,7 +27,7 @@ class Server
     public static function createWebsocket($port)
     {
         BaseMessage::$message_protocol = "websocket";
-        $main_io = new MainIo(new BaseMessage("0.0.0.0", $port),true);
+        $main_io = new MainIo(new BaseMessage("0.0.0.0", $port));
         return $main_io;
     }
 
