@@ -135,6 +135,15 @@ class Io
 
 
     /**
+     * 获取连接的其它信息
+     */
+    public function getInfo()
+    {
+        return $this->message_child->info();
+    }
+
+
+    /**
      * 负责底层通讯，BaseMessageChildInterface接口的实现
      * @var BaseMessageChildInterface message_child
      */

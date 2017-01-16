@@ -39,4 +39,6 @@ interface BaseMessageChildInterface
     public function close();
 
     public function onClose($callback);
+
+    public function info();
 }

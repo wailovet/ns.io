@@ -1,6 +1,5 @@
 <?php
 use Nsio\MainIo;
-
 class Server
 {
     public static function createTcp($port)

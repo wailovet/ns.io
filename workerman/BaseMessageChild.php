@@ -44,4 +44,11 @@ class BaseMessageChild implements BaseMessageChildInterface
             $callback && $callback();
         };
     }
+
+    public function info()
+    {
+        return array(
+            "ip" => $this->connection->getRemoteIp()
+        );
+    }
 }
