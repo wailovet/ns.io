@@ -1,53 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-
-<select name="" id="sel">
-    <option value="main">竹</option>
-    <option value="mss">墨</option>
-    <option value="ycc">影</option>
-</select>
-<button onclick="start()">确定</button>
-
-<textarea id="content" style="width: 500px;height: 500px"></textarea> <br>
-<input type="text" id="text"/><br>
-<button onclick="send()">发送</button>
-</body>
 <script>
-    var send;
-    function start() {
-        var group = document.getElementById("sel").value;
-        var url = "ws://127.0.0.1:12306";
-        var websocket = new WebSocket(url);
-        websocket.onopen = function () {
-            websocket.send(JSON.stringify({
-                event: "group",
-                data: group
-            }));
-            websocket.onmessage = function (data) {
-                var data = JSON.parse(data.data);
-                if(data['event'] == "message"){
-                    document.getElementById("content").value += "\n" + data['data'];
-                }
-                if(data['event'] == "count"){
-                    document.getElementById("content").value += "\n在线人数更新:" + data['data'];
-                }
-            };
-            websocket.onclose = function () {
-                alert("连接已经断开");
+    var url = "ws://lynk.t.3pr.com.cn:12306";
+    var websocket = new WebSocket(url);
+    function boot(uuid) {
+        websocket.send(JSON.stringify({
+            event: "BOOT",
+            data: {
+                uuid:uuid,
+                version:"2123486456"
             }
+        }));
+        websocket.onclose = function () {
+//                alert("连接已经断开");
         };
-        send = function () {
-            websocket.send(JSON.stringify({
-                event: "message",
-                data: document.getElementById("text").value
-            }));
+    }
+    function startPro(uuid) {
+        websocket.send(JSON.stringify({
+            event: "START_PROGRAM",
+            data: {
+                uuid:uuid
+            }
+        }));
 
-        }
     }
 </script>
 </html>
