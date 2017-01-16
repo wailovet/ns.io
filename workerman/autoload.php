@@ -1,6 +1,8 @@
 <?php
 
 require_once(__DIR__."/../interface/BaseMessageInterface.php");
+require_once(__DIR__."/../lib/Timer.php");
+require_once(__DIR__."/../lib/Heartbeat.php");
 require_once(__DIR__."/../lib/Group.php");
 require_once(__DIR__."/../lib/MainIo.php");
 require_once(__DIR__."/../lib/Io.php");

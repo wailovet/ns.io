@@ -21,16 +21,23 @@ class MainIo
      * @var BaseMessageInterface main_message
      */
     private $main_message;
+    private $is_heartbeat;
 
-    public function __construct($main_message)
+    public function __construct($main_message, $is_heartbeat = false)
     {
         $this->main_message = $main_message;
+        $this->is_heartbeat = $is_heartbeat;
     }
 
     public function connection($callback)
     {
-        $this->main_message->connect(function (BaseMessageChildInterface $message_child) use ($callback) {
+        $is_heartbeat = $this->is_heartbeat;
+        $this->main_message->connect(function (BaseMessageChildInterface $message_child) use ($callback, $is_heartbeat) {
             $io = new Io($message_child);
+            if ($is_heartbeat) {
+                $heartbeat = new Heartbeat($io);
+                $heartbeat->enter();
+            }
             $callback && $callback($io);
         });
     }
