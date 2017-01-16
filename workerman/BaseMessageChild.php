@@ -45,6 +45,7 @@ class BaseMessageChild implements BaseMessageChildInterface
         };
     }
 
+
     public function info()
     {
         return array(
