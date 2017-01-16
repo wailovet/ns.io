@@ -26,7 +26,7 @@ class Server
     public static function createWebsocket($port)
     {
         BaseMessage::$message_protocol = "websocket";
-        $main_io = new MainIo(new BaseMessage("0.0.0.0", $port));
+        $main_io = new MainIo(new BaseMessage("0.0.0.0", $port),true);
         return $main_io;
     }
 

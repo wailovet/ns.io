@@ -21,7 +21,6 @@ class Heartbeat
 
         $this->time_id = Timer::setInterval(function () use ($that) {
             if (empty($that->time_id)) {
-
                 echo "time_id is empty \n";
                 return;
             }
@@ -32,12 +31,16 @@ class Heartbeat
                 $that->enter_flag = false;
                 $that->timeout_count = 0;
             }
+
             if ($that->timeout_count >= $that->max_timeout_count) {
                 $that->io->close();
                 Timer::clearInterval($that->time_id);
                 echo "_HEARTBEAT:enter_timeout {$that->time_id}\n";
             }
         }, $timeout);
+        $this->io->disconnect(function () use ($that) {
+            Timer::clearInterval($that->time_id);
+        });
         $this->io->on("_HEARTBEAT", function () use ($that) {
             $that->enter_flag = true;
         });

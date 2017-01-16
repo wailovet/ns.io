@@ -8,6 +8,8 @@ class Io
 
     private $id;
 
+    public $is_connect = false;
+
     public function __construct(BaseMessageChildInterface $message_child)
     {
         $this->message_child = $message_child;
@@ -19,11 +21,13 @@ class Io
             $array_data = json_decode($data, true);
             $event_name = $array_data['event'];
             $event_callback = $self->getEvent("on_{$event_name}");
+            !isset($array_data['data']) && $array_data['data'] = null;
             $event_callback && $event_callback($array_data['data']);
         });
 
-
+        $this->is_connect = true;
         $this->message_child->onClose(function () use ($self) {
+            $self->is_connect = false;
             $event_callback = $self->getEvent("disconnect");
             $event_callback && $event_callback();
             Group::getInstance()->removeGlobal($self->getId());
@@ -40,7 +44,7 @@ class Io
      */
     public function getEvent($name)
     {
-        if ($this->events[$name]) {
+        if (isset($this->events[$name])) {
             $callback = $this->events[$name];
         } else {
             $callback = function () {
@@ -78,7 +82,15 @@ class Io
      */
     public function disconnect($callback)
     {
-        $this->event("disconnect", $callback);
+        $last_callback = $this->getEvent("disconnect");
+        $this->event("disconnect", function () use ($last_callback, $callback) {
+            if ($last_callback) {
+                $last_callback();
+            }
+            if ($callback) {
+                $callback();
+            }
+        });
     }
 
 
