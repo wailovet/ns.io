@@ -18,8 +18,13 @@ class Io
 
         $self = $this;
         $this->message_child->receive(function ($data) use ($self) {
-            $array_data = json_decode($data, true);
-            $event_name = $array_data['event'];
+            Log::d("receive", $data);
+            if (is_string($data)) {
+                $array_data = json_decode($data, true);
+            } else {
+                $array_data = $data;
+            }
+            $event_name = isset($array_data['event']) ? $array_data['event'] : "def";
             $event_callback = $self->getEvent("on_{$event_name}");
             !isset($array_data['data']) && $array_data['data'] = null;
             $event_callback && $event_callback($array_data['data']);
@@ -36,6 +41,8 @@ class Io
     }
 
     private $events = array();
+
+    public $ext = array();
 
     /**
      * 返回事件回调
@@ -72,7 +79,21 @@ class Io
      */
     public function on($event_name, $callback)
     {
-        $this->event("on_{$event_name}", $callback);
+        $last_callback = $this->getEvent("on_{$event_name}");
+        $this->event("on_{$event_name}", function ($data) use ($last_callback, $callback) {
+            if ($last_callback) {
+                $result = $last_callback($data);
+                if ($result) {
+                    return $result;
+                }
+            }
+            if ($callback) {
+                $result = $callback($data);
+                if ($result) {
+                    return $result;
+                }
+            }
+        });
     }
 
 
@@ -115,6 +136,8 @@ class Io
             "event" => $event_name,
             "data" => $message,
         );
+
+        Log::d("send", $data);
         $this->message_child->send(json_encode($data));
     }
 

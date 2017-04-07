@@ -21,10 +21,10 @@ class Group
      */
     public static function getInstance()
     {
-        if (null === static::$instance) {
-            static::$instance = new static();
+        if (null === self::$instance) {
+            self::$instance = new Group();
         }
-        return static::$instance;
+        return self::$instance;
     }
 
     private $group_map;
@@ -48,7 +48,11 @@ class Group
 
     private function get($name)
     {
-        $result = $this->group_map[$name];
+        if (!isset($this->group_map[$name])) {
+            $result = array();
+        } else {
+            $result = $this->group_map[$name];
+        }
         if (empty($result)) {
             $result = array();
         }
