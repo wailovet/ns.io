@@ -31,6 +31,7 @@ class Io
             $event_callback = $self->getEvent("on_{$event_name}");
             !isset($array_data['data']) && $array_data['data'] = null;
             $event_callback && $event_callback($array_data['data']);
+            $self->receive_event_callback && ($self->receive_event_callback)($data);
         });
 
         $this->is_connect = true;
@@ -139,9 +140,8 @@ class Io
             "event" => $event_name,
             "data" => $message,
         );
-
-        Log::d("send", $data);
-        $this->message_child->send(json_encode($data));
+        Log::d("send", json_encode($data, true));
+        $this->send($data);
     }
 
 
@@ -182,18 +182,31 @@ class Io
 
 
     /**
-     * 负责底层通讯，BaseMessageChildInterface接口的实现
+     * 负责底层通讯，ConnectionInterface接口的实现
      * @var ConnectionInterface message_child
      */
     private $message_child;
 
+
+    public $receive_event_callback;
+
     /**
-     * 注入底层通讯的实现
-     * @param ConnectionInterface $message_child
+     * 抓包底层数据
+     * @param $callback
      */
-    public function setMessageChild(ConnectionInterface $message_child)
+    public function receiveEvent($callback)
     {
-        $this->message_child = $message_child;
+        $this->receive_event_callback = $callback;
+    }
+
+
+    /**
+     * 底层数据发送
+     * @param $data
+     */
+    public function send($data)
+    {
+        return $this->message_child->send(json_encode($data));
     }
 
 

@@ -8,9 +8,27 @@ class ClientImplement implements ClientInterface
     /** @var AsyncTcpConnection $tcp_connect */
     protected $tcp_connect;
 
-    public function connect($host, $port)
+    private $host;
+    private $port;
+    private $protocol;
+
+    /**
+     * 初始化
+     * ServerInterface constructor.
+     * @param $protocol
+     * @param $host
+     * @param $port
+     */
+    public function __construct($protocol, $host, $port)
     {
-        $this->tcp_connect = new AsyncTcpConnection("{$host}:{$port}");
+        $this->host = $host;
+        $this->port = $port;
+        $this->protocol = $protocol;
+    }
+
+    public function connect()
+    {
+        $this->tcp_connect = new AsyncTcpConnection("{$this->protocol}://{$this->host}:{$this->port}");
         $this->tcp_connect->connect();
     }
 
@@ -36,4 +54,21 @@ class ClientImplement implements ClientInterface
             }
         };
     }
+
+
+    public function host()
+    {
+        return $this->host;
+    }
+
+    public function port()
+    {
+        return $this->port;
+    }
+
+    public function protocol()
+    {
+        return $this->protocol;
+    }
+
 }

@@ -4,13 +4,20 @@ namespace Nsio;
 interface ServerInterface
 {
 
+    public function protocol();
+
+    public function host();
+
+    public function port();
+
     /**
      * 初始化
-     * BaseMessageInterface constructor.
+     * ServerInterface constructor.
+     * @param $protocol
      * @param $host
      * @param $port
      */
-    public function __construct($host, $port);
+    public function __construct($protocol, $host, $port);
 
     /**
      * 连接事件，传入一个BaseMessageChildInterface
@@ -55,10 +62,27 @@ interface ConnectionInterface
 
 interface ClientInterface
 {
-    public function connect($host, $port);
+    /**
+     * 初始化
+     * ServerInterface constructor.
+     * @param $protocol
+     * @param $host
+     * @param $port
+     */
+    public function __construct($protocol, $host, $port);
+
+    public function protocol();
+
+    public function host();
+
+    public function port();
+
+    public function connect();
 
     public function send($data);
 
     public function receive($callback);
+
+    public function close($callback);
 
 }

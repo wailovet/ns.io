@@ -7,9 +7,17 @@ class ServerImplement implements ServerInterface
     public $worker;
     public static $message_protocol = "websocket";
 
-    public function __construct($host, $port)
+
+    private $host;
+    private $port;
+    private $protocol;
+
+    public function __construct($protocol, $host, $port)
     {
-        $this->worker = new Worker(ServerImplement::$message_protocol . "://{$host}:{$port}");
+        $this->host = $host;
+        $this->port = $port;
+        $this->protocol = $protocol;
+        $this->worker = new Worker("{$protocol}://{$host}:{$port}");
     }
 
     public function connect($callback)
@@ -42,5 +50,20 @@ class ServerImplement implements ServerInterface
             "id" => $this->worker->id,
             "count" => count($this->worker->connections)
         );
+    }
+
+    public function host()
+    {
+        return $this->host;
+    }
+
+    public function port()
+    {
+        return $this->port;
+    }
+
+    public function protocol()
+    {
+        return $this->protocol;
     }
 }
