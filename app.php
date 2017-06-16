@@ -9,8 +9,8 @@ $http_server->connection(function (Io $io) {
 });
 
 $websocket = Server::createWebsocket(1084);
-$websocket->connection(function (Io $io) {
-    $io->on("hi", function ($data) use ($io) {
-        $io->emit("hi", $data);
+$websocket->connection(function (Io $io) use ($websocket) {
+    $io->on("hi", function ($data) use ($io, $websocket) {
+        $websocket->emit("hi", $data);
     });
 });
