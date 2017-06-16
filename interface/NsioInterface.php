@@ -1,6 +1,7 @@
 <?php
+namespace Nsio;
 
-interface BaseMessageInterface
+interface ServerInterface
 {
 
     /**
@@ -19,13 +20,22 @@ interface BaseMessageInterface
     public function connect($callback);
 
     /**
+     * @param $callback
+     * @return mixed
+     */
+    public function start($callback);
+
+    /**
      * 运行
      * @return mixed
      */
     public static function run();
+
+
+    public function info();
 }
 
-interface BaseMessageChildInterface
+interface ConnectionInterface
 {
     public function send($data);
 
@@ -41,4 +51,14 @@ interface BaseMessageChildInterface
     public function onClose($callback);
 
     public function info();
+}
+
+interface ClientInterface
+{
+    public function connect($host, $port);
+
+    public function send($data);
+
+    public function receive($callback);
+
 }

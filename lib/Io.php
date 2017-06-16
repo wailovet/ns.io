@@ -1,8 +1,6 @@
 <?php
 namespace Nsio;
 
-use BaseMessageChildInterface;
-
 class Io
 {
 
@@ -10,7 +8,7 @@ class Io
 
     public $is_connect = false;
 
-    public function __construct(BaseMessageChildInterface $message_child)
+    public function __construct(ConnectionInterface $message_child)
     {
         $this->message_child = $message_child;
         $this->id = time() . rand(100000, 999999);
@@ -19,10 +17,15 @@ class Io
         $self = $this;
         $this->message_child->receive(function ($data) use ($self) {
             Log::d("receive", $data);
+
             if (is_string($data)) {
                 $array_data = json_decode($data, true);
             } else {
                 $array_data = $data;
+            }
+            if (!isset($array_data['event'])) {
+                echo "receive:{$data}  ???? \n";
+                return;
             }
             $event_name = isset($array_data['event']) ? $array_data['event'] : "def";
             $event_callback = $self->getEvent("on_{$event_name}");
@@ -180,15 +183,15 @@ class Io
 
     /**
      * 负责底层通讯，BaseMessageChildInterface接口的实现
-     * @var BaseMessageChildInterface message_child
+     * @var ConnectionInterface message_child
      */
     private $message_child;
 
     /**
      * 注入底层通讯的实现
-     * @param BaseMessageChildInterface $message_child
+     * @param ConnectionInterface $message_child
      */
-    public function setMessageChild(BaseMessageChildInterface $message_child)
+    public function setMessageChild(ConnectionInterface $message_child)
     {
         $this->message_child = $message_child;
     }

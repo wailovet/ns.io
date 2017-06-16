@@ -1,12 +1,7 @@
 <?php
+use Nsio\ConnectionInterface;
 
-/**
- * Created by PhpStorm.
- * User: wailovet
- * Date: 16/12/29
- * Time: 下午10:47
- */
-class BaseMessageChild implements BaseMessageChildInterface
+class ConnectionImplement implements ConnectionInterface
 {
 
     /** @var \Workerman\Connection\TcpConnection $connection */

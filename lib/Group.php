@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: wailovet
- * Date: 16/12/29
- * Time: 下午9:09
- */
-
 namespace Nsio;
 
 
@@ -71,8 +64,14 @@ class Group
     public function count($name = "")
     {
         if (empty($name)) {
+            if(!isset($this->group_map['all'])){
+                return 0;
+            }
             return count($this->group_map['all']);
         } else {
+            if(!isset($this->group_map["item_{$name}"])){
+                return 0;
+            }
             return count($this->group_map["item_{$name}"]);
         }
     }

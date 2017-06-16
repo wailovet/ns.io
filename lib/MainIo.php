@@ -1,49 +1,39 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: wailovet
- * Date: 16/12/29
- * Time: 下午9:09
- */
-
 namespace Nsio;
-
-
-use BaseMessageChildInterface;
-use BaseMessageInterface;
 
 class MainIo
 {
 
+    protected $gateway;
 
     /**
      * 通讯协议的实现
-     * @var BaseMessageInterface main_message
+     * @var ServerInterface main_message
      */
     private $main_message;
-    private $is_heartbeat;
 
     public function __construct($main_message, $is_heartbeat = false)
     {
         $this->main_message = $main_message;
-        $this->is_heartbeat = $is_heartbeat;
+    }
+
+    public function onStart($callback)
+    {
+        $this->main_message->start(function () use ($callback) {
+            $callback && $callback();
+        });
     }
 
     public function connection($callback)
     {
-        $is_heartbeat = $this->is_heartbeat;
-        $this->main_message->connect(function (BaseMessageChildInterface $message_child) use ($callback, $is_heartbeat) {
+        $this->main_message->connect(function (ConnectionInterface $message_child) use ($callback) {
             $io = new Io($message_child);
-            if ($is_heartbeat) {
-                $heartbeat = new Heartbeat($io);
-                $heartbeat->enter();
-            }
             $callback && $callback($io);
         });
     }
 
 
-    private $group_name;
+    protected $group_name;
 
     public function toGroup($group_name)
     {
@@ -51,7 +41,7 @@ class MainIo
         return $this;
     }
 
-    private $filter_id;
+    protected $filter_id;
 
     public function filter($id = array())
     {
@@ -61,7 +51,10 @@ class MainIo
         return $this;
     }
 
-    public function emit($event_name, $message)
+
+    public $emitByGroupEvent;
+
+    public function emit($event_name, $message, $is_emit_event = false)
     {
         if (empty($this->group_name)) {
             $map = Group::getInstance()->getGlobal();
@@ -71,14 +64,21 @@ class MainIo
         /** @var Io $item */
         foreach ($map as $item) {
             $id = $item->getId();
-            if (!$this->filter_id[$id]) {
+            if (!isset($this->filter_id[$id])) {
                 $item->emit($event_name, $message);
             }
+        }
+        if (isset($this->emitByGroupEvent) && $is_emit_event) {
+            ($this->emitByGroupEvent)($this->group_name, $event_name, $message);
         }
         $this->group_name = null;
         $this->filter_id = array();
     }
 
+    public function getInfo()
+    {
+        return $this->main_message->info();
+    }
 
     public function run()
     {
