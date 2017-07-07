@@ -14,3 +14,11 @@ $websocket->connection(function (Io $io) use ($websocket) {
         $websocket->emit("hi", $data);
     });
 });
+
+$tcp_socket = Server::createTcp(26688);
+$tcp_socket->connection(function (ConnectionImplement $con){
+    $con->connection->onMessage = function ($data){
+        echo $data;
+    };
+});
+$tcp_socket->run();

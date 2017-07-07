@@ -4,6 +4,9 @@ namespace Nsio;
 class Io
 {
 
+
+    public static $excision = "\r\n";
+
     private $id;
 
     public $is_connect = false;
@@ -15,23 +18,36 @@ class Io
         Group::getInstance()->pushGlobal($this);
 
         $self = $this;
-        $this->message_child->receive(function ($data) use ($self) {
-            Log::d("receive", $data);
+        $this->message_child->receive(function ($data_all) use ($self) {
+            $data_array = explode(self::$excision, $data_all);
+            echo "data_all:" . json_encode($data_all) . "\n";
+            for ($i = 0; $i < count($data_array); $i++) {
+                $data = $data_array[$i];
+                if (empty($data)) {
+                    continue;
+                }
 
-            if (is_string($data)) {
-                $array_data = json_decode($data, true);
-            } else {
-                $array_data = $data;
+
+                Log::d("receive", $data);
+                if (is_string($data)) {
+                    $array_data = json_decode($data, true);
+                } else {
+                    $array_data = $data;
+                }
+                if (!isset($array_data['event'])) {
+                    echo "receive:" . json_encode($data) . "  ???? \n";
+                    continue;
+                }
+                $event_name = isset($array_data['event']) ? $array_data['event'] : "def";
+                $event_callback = $self->getEvent("on_{$event_name}");
+                !isset($array_data['data']) && $array_data['data'] = null;
+                $event_callback && $event_callback($array_data['data']);
+                $self->receive_event_callback && ($self->receive_event_callback)($data);
+
+
             }
-            if (!isset($array_data['event'])) {
-                echo "receive:{$data}  ???? \n";
-                return;
-            }
-            $event_name = isset($array_data['event']) ? $array_data['event'] : "def";
-            $event_callback = $self->getEvent("on_{$event_name}");
-            !isset($array_data['data']) && $array_data['data'] = null;
-            $event_callback && $event_callback($array_data['data']);
-            $self->receive_event_callback && ($self->receive_event_callback)($data);
+
+
         });
 
         $this->is_connect = true;
@@ -206,7 +222,7 @@ class Io
      */
     public function send($data)
     {
-        return $this->message_child->send(json_encode($data));
+        return $this->message_child->send(json_encode($data) . self::$excision);
     }
 
 
